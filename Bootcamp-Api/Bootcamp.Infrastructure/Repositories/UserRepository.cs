@@ -2,6 +2,7 @@
 using Bootcamp.Domain.Interfaces;
 using Bootcamp.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Bootcamp.Infrastructure.Repositories;
 
@@ -18,6 +19,15 @@ public class UserRepository : IUserRepository
     {
         return await _dbContext
             .Set<User>()
+            .Include(x => x.Role)
+            .ToListAsync();
+    }
+
+    public async Task<List<User>> GetList(Expression<Func<User, bool>> predicate)
+    {
+        return await _dbContext
+            .Set<User>()
+            .Where(predicate)
             .ToListAsync();
     }
 
@@ -25,6 +35,7 @@ public class UserRepository : IUserRepository
     {
         return await _dbContext
             .Set<User>()
+            .Include(x => x.Role)
             .Where(user => user.Id == userId)
             .FirstOrDefaultAsync();
     }

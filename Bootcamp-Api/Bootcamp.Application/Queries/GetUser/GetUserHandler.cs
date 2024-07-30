@@ -1,4 +1,5 @@
-﻿using Bootcamp.Application.Models;
+﻿using AutoMapper;
+using Bootcamp.Application.Models;
 using Bootcamp.Domain.Interfaces;
 using MediatR;
 
@@ -6,11 +7,13 @@ namespace Bootcamp.Application.Queries.GetUser;
 
 public class GetUserHandler : IRequestHandler<GetUserQuery, GetUserResponse>
 {
+    private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
 
-    public GetUserHandler(IUserRepository userRepository)
+    public GetUserHandler(IUserRepository userRepository, IMapper mapper)
     {
         _userRepository = userRepository;
+        _mapper = mapper;
     }
 
     public async Task<GetUserResponse> Handle(GetUserQuery request, CancellationToken cancellationToken)
@@ -22,7 +25,7 @@ public class GetUserHandler : IRequestHandler<GetUserQuery, GetUserResponse>
         if (user is null)
             return response;
 
-        response.User = new UserDto { Id = user.Id, Name = user.Name };
+        response.User = _mapper.Map<UserDto>(user);
 
         return response;
     }

@@ -1,4 +1,5 @@
-﻿using Bootcamp.Application.Models;
+﻿using AutoMapper;
+using Bootcamp.Application.Models;
 using Bootcamp.Domain.Interfaces;
 using MediatR;
 
@@ -6,11 +7,13 @@ namespace Bootcamp.Application.Queries.GetUserList;
 
 public class GetUserListHandler : IRequestHandler<GetUserListQuery, GetUserListResponse>
 {
+    private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
 
-    public GetUserListHandler(IUserRepository userRepository)
+    public GetUserListHandler(IUserRepository userRepository, IMapper mapper)
     {
         _userRepository = userRepository;
+        _mapper = mapper;
     }
 
     public async Task<GetUserListResponse> Handle(GetUserListQuery request, CancellationToken cancellationToken)
@@ -21,7 +24,7 @@ public class GetUserListHandler : IRequestHandler<GetUserListQuery, GetUserListR
 
         response.UserList = userList
             .OrderByDescending(user => user.Id)
-            .Select(user => new UserDto { Id = user.Id, Name = user.Name })
+            .Select(user => _mapper.Map<UserDto>(user))
             .ToList();
 
         return response;

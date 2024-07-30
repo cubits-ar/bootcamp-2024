@@ -11,7 +11,8 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand>
     private readonly IValidator<CreateUserCommand> _validator;
     private readonly IUserRepository _userRepository;
 
-    public CreateUserHandler(IUserRepository userRepository, 
+    public CreateUserHandler(
+        IUserRepository userRepository, 
         IValidator<CreateUserCommand> validator)
     {
         _userRepository = userRepository;
@@ -23,6 +24,10 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand>
         var result = _validator.Validate(request);
 
         var user = new User { Name = request.Name, RoleId = (int)RoleEnum.Admin };
-        await _userRepository.Create(user);
+
+        var userId = await _userRepository.Create(user);
+
+        if (userId < 1)
+            throw new Exception("Invalid userId");
     }
 }

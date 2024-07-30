@@ -40,10 +40,11 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task Create(User user)
+    public async Task<int> Create(User user)
     {
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
+        return user.Id; // Just for test cases only
     }
 
     public async Task Update(User user)
